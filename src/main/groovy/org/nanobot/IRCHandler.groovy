@@ -27,6 +27,7 @@ class IRCHandler implements Runnable {
     void run() {
         reader.eachLine { String line ->
             def split = line.split(' ')
+
             if (split[0]=='PING') {
                 bot.dispatch(name: 'ping', id: split[1].substring(1))
                 writer.println 'PONG ' + split[1]
@@ -42,12 +43,29 @@ class IRCHandler implements Runnable {
                 def user = NanoBot.getNick(split[0])
                 def msg = split.drop(3).join(' ').substring(1)
                 bot.dispatch(name: 'pm', user: user, message: msg)
-            } else if (split[1]=='332') { // Topic is being sent
+            } else if (split[1]=='332') { // Topic is being sent on join
                 def topic = split.drop(4).join(' ').substring(1)
                 bot.getTopics()[split[3]] = topic
                 bot.dispatch(name: 'topic', channel: split[3], topic: topic)
             } else if (split[0]=='ERROR') { // Error has occurred
                 println split.drop(1).join(' ').substring(1)
+            } else if (split[1]=='TOPIC') { // Topic was changed
+                def user = NanoBot.getNick(split[0])
+                def channel = split[2]
+                def topic = split.drop(3).join(' ').substring(1)
+                bot.getTopics()[channel] = topic
+                bot.dispatch(name: 'topic', channel: channel, topic: topic, user: user)
+            } else if (split[1]=='INVITE') { // Invited to Channel
+                def user = NanoBot.getNick(split[0])
+                def channel = NanoBot.getNick(split[3].substring(1))
+
+                bot.dispatch(name: 'invite', user: user, channel: channel)
+            } else if (split[1]=='NICK') { // Someones nick was changed
+                println line
+                def original = NanoBot.getNick(split[0])
+                def newNick = split[2].substring(1)
+
+                bot.dispatch(name: 'nick-change', new: newNick, original: original)
             }
             if (bot.debug) println line
         }

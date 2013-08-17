@@ -11,6 +11,7 @@ class NanoBot {
     def debug = false
     def socket = new Socket()
     def realName = 'NanoBot'
+    def commandPrefix = '!'
     IRCHandler ircHandler
     HashMap<String, ArrayList<Closure>> handlers = [:]
     def userName = 'NanoBot'
@@ -116,12 +117,13 @@ class NanoBot {
             def user = it['user']
             def channel = it['channel']
             def msg = (it['message'] as String).trim()
-            if (!msg.startsWith('!')) {
+            if (!msg.startsWith(commandPrefix)) {
                 return
             }
             def split = msg.split(' ')
-            def cmd = split[0].trim().substring(1)
-            dispatch(name: 'command', user: user, channel: channel, message: msg, split: split, command: cmd, false)
+            def args = split.drop(1)
+            def cmd = split[0].trim().substring(commandPrefix.length())
+            dispatch(name: 'command', user: user, channel: channel, message: msg, split: split, args: args, command: cmd, false)
         }
     }
 
@@ -130,5 +132,44 @@ class NanoBot {
             hostmask = hostmask.substring(1)
         }
         return hostmask.substring(0, hostmask.indexOf('!'))
+    }
+
+    def identify(password) {
+        msg('NickServ', "identify $password")
+    }
+
+    def identify(user, password) {
+        msg('NickServ', "identify $user $password")
+    }
+
+    def kick(channel, user) {
+        send("KICK $channel $user")
+    }
+
+    def ban(channel, user) {
+        send("BAN $channel $user")
+    }
+
+    def kickBan(channel, user) {
+        ban(channel, user)
+        kick(channel, user)
+    }
+
+    def op(channel, user) {
+        mode(channel, user, '+o')
+    }
+
+    def voice(channel, user) {
+        mode(channel, user, '+v')
+    }
+
+    def mode(channel, user, mode) {
+        send("MODE $channel $mode $user")
+    }
+
+    def useShutdownHook() {
+        addShutdownHook {
+            bot.disconnect('Bot Stopped')
+        }
     }
 }
