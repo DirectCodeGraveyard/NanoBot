@@ -1,9 +1,63 @@
 apply plugin: 'groovy'
+apply plugin: 'maven'
+
+def frameworkVersion = '0.5-SNAPSHOT'
 
 repositories {
     mavenCentral()
+
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
 }
 
 dependencies {
     compile 'org.codehaus.groovy:groovy:2.1.6'
+}
+
+if (!hasProperty('sonatypeUsername')) {ext.sonatypeUsername = ''}
+if (!hasProperty('sonatypePassword')) {ext.sonatypePassword = ''}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
+            authentication(userName: sonatypeUsername, password: sonatypePassword)
+        }
+
+        snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
+            authentication(userName: sonatypeUsername, password: sonatypePassword)
+        }
+
+        pom {
+            groupId = 'com.directmyfile'
+            version = frameworkVersion
+            artifactId = project.name
+            project {
+                name project.name
+                packaging 'jar'
+                description 'A Groovy-based IRC Framework'
+                inceptionYear '2013'
+                url 'http://www.directmyfile.com/'
+
+                scm {
+                    url 'https://github.com/kaendfinger/NanoBot/'
+                    connection 'scm:git:git://github.com/kaendfinger/NanoBot.git'
+                    developerConnection 'scm:git:git@github.com:kaendfinger/NanoBot.git'
+                }
+
+                issueManagement {
+                    system 'jira'
+                    url 'https://directmyfile.atlassian.net/'
+                }
+
+                licenses {
+                    license {
+                        name 'GNU Lesser General Public License (LGPL), Version 3'
+                        url 'http://www.gnu.org/licenses/lgpl.txt'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
+    }
 }
