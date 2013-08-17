@@ -11,7 +11,7 @@ class NanoBot {
     def debug = false
     def socket = new Socket()
     def realName = 'NanoBot'
-    ConnectionHandler connection
+    IRCHandler ircHandler
     HashMap<String, ArrayList<Closure>> handlers = [:]
     def userName = 'NanoBot'
 
@@ -44,19 +44,28 @@ class NanoBot {
 
     def connect() {
         socket.connect(new InetSocketAddress(server as String, port as int))
-        connection = new ConnectionHandler(this, socket.inputStream.newReader(), new PrintStream(socket.outputStream))
+        ircHandler = new IRCHandler(this, socket.inputStream.newReader(), new PrintStream(socket.outputStream))
     }
 
     @CompileStatic
-    def dispatch(data) {
+    def dispatch(data, useThread) {
         def name = data['name']
         if (name==null || !handlers.containsKey(name)) {return}
         def handlers = handlers.get(name)
         handlers.each { Closure it ->
-            Thread.startDaemon { ->
+            if (useThread) {
+                Thread.startDaemon { ->
+                    it.call(data)
+                }
+            } else {
                 it.call(data)
             }
         }
+    }
+
+    @CompileStatic
+    def dispatch(data) {
+        dispatch(data, true)
     }
 
     def on(String name, Closure closure) {
@@ -90,7 +99,7 @@ class NanoBot {
     }
 
     def send(line) {
-        connection.send(line)
+        ircHandler.send(line)
     }
 
     def disconnect(message) {
@@ -105,18 +114,21 @@ class NanoBot {
     def enableCommandEvent() {
         on('message') {
             def user = it['user']
-            def channel = it['to']
+            def channel = it['channel']
             def msg = (it['message'] as String).trim()
             if (!msg.startsWith('!')) {
                 return
             }
             def split = msg.split(' ')
             def cmd = split[0].trim().substring(1)
-            dispatch(name: 'command', user: user, channel: channel, message: msg, split: split, command: cmd)
+            dispatch(name: 'command', user: user, channel: channel, message: msg, split: split, command: cmd, false)
         }
     }
 
     static def getNick(String hostmask) {
+        if (hostmask.startsWith(':')) {
+            hostmask = hostmask.substring(1)
+        }
         return hostmask.substring(0, hostmask.indexOf('!'))
     }
 }
