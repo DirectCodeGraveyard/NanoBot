@@ -11,7 +11,11 @@ Use the [Gradle Wrapper](http://www.gradle.org/docs/current/userguide/gradle_wra
 Using
 -----
 
-An example bot is coming soon.
+Examples:
+- [ForgeEssentials Bot](https://github.com/ForgeEssentials/cloaked-octo-robot)
+- [NanoBot Test](https://github.com/kaendfinger/NanoBot/blob/master/src/main/groovy/TestNanoBot.groovy)
+
+Javadocs are coming soon.
 
 Features
 --------
