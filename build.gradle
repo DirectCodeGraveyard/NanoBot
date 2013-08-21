@@ -11,6 +11,16 @@ repositories {
     }
 }
 
+compileGroovy {
+    sourceCompatibility = '1.6'
+    targetCompatibility = '1.6'
+}
+
+compileJava {
+    sourceCompatibility = '1.6'
+    targetCompatibility = '1.6'
+}
+
 dependencies {
     compile 'org.codehaus.groovy:groovy:2.1.6'
 }

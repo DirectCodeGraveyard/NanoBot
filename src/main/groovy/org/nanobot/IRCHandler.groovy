@@ -36,11 +36,11 @@ class IRCHandler implements Runnable {
                     bot.dispatch(name: 'ready')
                 }
             } else if (split[1]=='PRIVMSG' && split[2].startsWith('#')) { // Channel Message
-                def sender = NanoBot.getNick(split[0])
+                def sender = NanoBot.parseNickname(split[0])
                 def msg = split.drop(3).join(' ').substring(1)
                 bot.dispatch(name: 'message', channel: split[2], user: sender, message: msg)
             } else if (split[1]=='PRIVMSG' && !(split[2].startsWith('#'))) { // Private Message
-                def user = NanoBot.getNick(split[0])
+                def user = NanoBot.parseNickname(split[0])
                 def msg = split.drop(3).join(' ').substring(1)
                 bot.dispatch(name: 'pm', user: user, message: msg)
             } else if (split[1]=='332') { // Topic is being sent on join
@@ -50,22 +50,23 @@ class IRCHandler implements Runnable {
             } else if (split[0]=='ERROR') { // Error has occurred
                 println split.drop(1).join(' ').substring(1)
             } else if (split[1]=='TOPIC') { // Topic was changed
-                def user = NanoBot.getNick(split[0])
+                def user = NanoBot.parseNickname(split[0])
                 def channel = split[2]
                 def topic = split.drop(3).join(' ').substring(1)
                 bot.getTopics()[channel] = topic
                 bot.dispatch(name: 'topic', channel: channel, topic: topic, user: user)
             } else if (split[1]=='INVITE') { // Invited to Channel
-                def user = NanoBot.getNick(split[0])
-                def channel = NanoBot.getNick(split[3].substring(1))
+                def user = NanoBot.parseNickname(split[0])
+                def channel = NanoBot.parseNickname(split[3].substring(1))
 
                 bot.dispatch(name: 'invite', user: user, channel: channel)
             } else if (split[1]=='NICK') { // Someones nick was changed
-                println line
-                def original = NanoBot.getNick(split[0])
+                def original = NanoBot.parseNickname(split[0])
                 def newNick = split[2].substring(1)
 
                 bot.dispatch(name: 'nick-change', new: newNick, original: original)
+            } else if (split[1]=='433') { // Nickname is in Use
+                bot.dispatch(name: 'nick-in-use', original: split[3])
             }
             if (bot.debug) println line
         }

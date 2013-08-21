@@ -79,6 +79,10 @@ class NanoBot {
         }
     }
 
+    def getHandlers() {
+        return handlers
+    }
+
     def join(channel) {
         send("JOIN $channel")
         dispatch(name: 'bot-join', channel: channel)
@@ -90,9 +94,6 @@ class NanoBot {
     }
 
     def msg(target, String msg) {
-        if (target.is(null)) {
-            target = 'kaendfinger'
-        }
         msg.split('\n').each {
             send("PRIVMSG $target :$it")
             dispatch(name: 'bot-message', target: target, message: it)
@@ -120,18 +121,12 @@ class NanoBot {
             if (!msg.startsWith(commandPrefix)) {
                 return
             }
+            msg = msg.substring(commandPrefix.length())
             def split = msg.split(' ')
             def args = split.drop(1)
-            def cmd = split[0].trim().substring(commandPrefix.length())
+            def cmd = split[0]
             dispatch(name: 'command', user: user, channel: channel, message: msg, split: split, args: args, command: cmd, false)
         }
-    }
-
-    static def getNick(String hostmask) {
-        if (hostmask.startsWith(':')) {
-            hostmask = hostmask.substring(1)
-        }
-        return hostmask.substring(0, hostmask.indexOf('!'))
     }
 
     def identify(password) {
@@ -169,7 +164,29 @@ class NanoBot {
 
     def useShutdownHook() {
         addShutdownHook {
-            bot.disconnect('Bot Stopped')
+            disconnect('Bot Stopped')
         }
+    }
+
+    def changeNick(newNick) {
+        send("NICK $newNick")
+    }
+
+    def notice(target, String msg) {
+        msg.split('\n').each {
+            send("NOTICE $target :$it")
+            dispatch(name: 'bot-notice', target: target, message: it)
+        }
+    }
+
+    private static parseNickname = { String hostmask ->
+        if (hostmask.startsWith(':')) {
+            hostmask = hostmask.substring(1)
+        }
+        return hostmask.substring(0, hostmask.indexOf('!'))
+    }.memoize()
+
+    static def parseNickname(String hostmask) {
+        return parseNickname.call(hostmask)
     }
 }
