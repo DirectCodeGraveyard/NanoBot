@@ -7,7 +7,7 @@ class NanoBot {
     def server
     def port
     def nickname
-    HashMap<String, String> topics = [:]
+    HashMap<String, Channel> channels = [:]
     def debug = false
     def socket = new Socket()
     def realName = 'NanoBot'
@@ -82,7 +82,6 @@ class NanoBot {
 
     def join(channel) {
         send("JOIN $channel")
-        dispatch(name: 'bot-join', channel: channel)
     }
 
     def part(channel) {

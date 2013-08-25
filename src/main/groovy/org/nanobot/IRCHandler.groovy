@@ -25,7 +25,7 @@ class IRCHandler implements Runnable {
     void run() {
         reader.eachLine { String line ->
             def split = line.split(' ')
-
+            if (bot.debug) println line
             if (split[0]=='PING') {
                 bot.dispatch(name: 'ping', id: split[1].substring(1))
                 writer.println 'PONG ' + split[1]
@@ -43,7 +43,7 @@ class IRCHandler implements Runnable {
                 bot.dispatch(name: 'pm', user: user, message: msg)
             } else if (split[1]=='332') { // Topic is being sent on join
                 def topic = split.drop(4).join(' ').substring(1)
-                bot.topics[split[3]] = topic
+                bot.channels.get(split[3]).topic = topic
                 bot.dispatch(name: 'topic', channel: split[3], topic: topic)
             } else if (split[0]=='ERROR') { // Error has occurred
                 println split.drop(1).join(' ').substring(1)
@@ -51,7 +51,7 @@ class IRCHandler implements Runnable {
                 def user = NanoBot.parseNickname(split[0])
                 def channel = split[2]
                 def topic = split.drop(3).join(' ').substring(1)
-                bot.topics[channel] = topic
+                bot.channels.get(channel).topic = topic
                 bot.dispatch(name: 'topic', channel: channel, topic: topic, user: user)
             } else if (split[1]=='INVITE') { // Invited to Channel
                 def user = NanoBot.parseNickname(split[0])
@@ -69,12 +69,63 @@ class IRCHandler implements Runnable {
                 if (split[3]==bot.nickname) {
                     bot.dispatch(name: 'bot-kick' , channel: split[2], user: NanoBot.parseNickname(split[0]))
                 }
+            } else if (split[1]=='353') {
+                def names = split.drop(5)
+                def channel = bot.channels.get(split[4])
+                names.each { String name ->
+                    if (name.startsWith(':')) {
+                        name = name.substring(1)
+                    }
+                    if (name.startsWith('@')) {
+                        channel.users.add(name.substring(1))
+                        channel.ops.add(name.substring(1))
+                    } else if (name.startsWith('+')) {
+                        channel.users.add(name.substring(1))
+                        channel.voices.add(name.substring(1))
+                    } else {
+                        channel.users.add(name)
+                    }
+                }
+            } else if (split[1]=='JOIN') {
+                def user = NanoBot.parseNickname(split[0])
+                if (user==bot.nickname) {
+                    def channel = new Channel()
+                    channel.name = split[2]
+                    bot.channels.put(channel.name, channel)
+                    bot.dispatch(name: 'bot-join', channel: channel)
+                    return
+                }
+                bot.channels.get(split[2]).users.add(user as String)
+            } else if (split[1]=='PART') {
+                def user = NanoBot.parseNickname(split[0])
+                removeUser(split[2], user)
+            } else if (split[1]=='MODE') {
+                def m = split[3]
+                def channel = bot.channels.get(split[2])
+                if (split.length>=5) {
+                    def target = split[4]
+                    if (m=='+v') {
+                        channel.voices.add(target)
+                    } else if (m=='+o') {
+                        channel.ops.add(target)
+                    } else if (m=='-o') {
+                        channel.ops.remove(target)
+                    } else if (m=='-v') {
+                        channel.voices.remove(target)
+                    }
+                }
             }
-            if (bot.debug) println line
         }
     }
 
     def send(line) {
         writer.println line
+    }
+
+    def removeUser(String channel, user) {
+        def c = bot.channels[channel]
+        c.users.remove(user)
+        c.ops.remove(user)
+        c.voices.remove(user)
     }
 }
