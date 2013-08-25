@@ -4,12 +4,24 @@ class BotManager {
     def ArrayList<NanoBot> bots = []
 
     def addBot(server, port, nick) {
-        bots.add(new NanoBot(server, port, nick))
+        def bot = new NanoBot(server, port, nick)
+        bots.add(bot)
+        return bot
+    }
+
+    def cloneBot(NanoBot original, nickname) {
+        def bot = addBot(original.server, original.port, nickname)
+        bot.handlers = original.handlers
+        bot.userName = original.userName
+        bot.realName = original.realName
+        bot.commandPrefix = original.commandPrefix
+        return bot
     }
 
     def connectAll() {
         bots.each {
             it.connect()
+            sleep(1000)
         }
     }
 
@@ -35,11 +47,19 @@ class BotManager {
         bots.each {
             it.disconnect()
         }
+        bots = []
     }
 
     def part(channel) {
         bots.each {
             it.part(channel)
         }
+    }
+
+    def slayAll() {
+        bots.each {
+            it.socket.close()
+        }
+        bots = []
     }
 }

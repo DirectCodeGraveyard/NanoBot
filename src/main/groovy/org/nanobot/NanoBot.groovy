@@ -16,11 +16,7 @@ class NanoBot {
     HashMap<String, ArrayList<Closure>> handlers = [:]
     def userName = 'NanoBot'
 
-    NanoBot() {
-        addShutdownHook {
-            disconnect()
-        }
-    }
+    NanoBot() {}
 
     NanoBot(server, port, nickname) {
         this()
@@ -54,6 +50,7 @@ class NanoBot {
         if (name==null || !handlers.containsKey(name)) {return}
         def handlers = handlers.get(name)
         handlers.each { Closure it ->
+            it.delegate = this
             if (useThread) {
                 Thread.startDaemon { ->
                     it.call(data)
@@ -94,8 +91,9 @@ class NanoBot {
     }
 
     def msg(target, String msg) {
-        msg.split('\n').each {
+        msg.readLines().each {
             send("PRIVMSG $target :$it")
+            sleep(500)
             dispatch(name: 'bot-message', target: target, message: it)
         }
     }
@@ -142,7 +140,7 @@ class NanoBot {
     }
 
     def ban(channel, user) {
-        send("BAN $channel $user")
+        mode(channel, user, '+b')
     }
 
     def kickBan(channel, user) {
@@ -188,5 +186,30 @@ class NanoBot {
 
     static def parseNickname(String hostmask) {
         return parseNickname.call(hostmask)
+    }
+
+    def act(channel, message) {
+        msg(channel, "\u0001ACTION ${message}\u0001")
+    }
+
+    def deop(channel, user) {
+        mode(channel, user, '-o')
+    }
+
+    def devoice(channel, user) {
+        mode(channel, user, '-v')
+    }
+
+    def unban(channel, user) {
+        mode(channel, user, '-b')
+    }
+
+    def kick(channel, user, reason) {
+        send("KICK $channel $user :$reason")
+    }
+
+    def kickBan(channel, user, reason) {
+        ban(channel, user)
+        kick(channel, user, reason)
     }
 }

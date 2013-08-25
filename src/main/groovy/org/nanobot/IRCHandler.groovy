@@ -13,9 +13,7 @@ class IRCHandler implements Runnable {
         this.bot = bot
         this.reader = reader
         this.writer = writer
-        this.thread = new Thread(this)
-        thread.setName('NanoBot-InputHandler')
-        thread.start()
+        this.thread = Thread.start {this.run()}.setName('NanoBot-InputHandler')
         bot.dispatch(name: 'connect')
         writer.println 'NICK ' + bot.nickname
         writer.println "USER ${bot.userName} * 8 :${bot.realName}"
@@ -45,7 +43,7 @@ class IRCHandler implements Runnable {
                 bot.dispatch(name: 'pm', user: user, message: msg)
             } else if (split[1]=='332') { // Topic is being sent on join
                 def topic = split.drop(4).join(' ').substring(1)
-                bot.getTopics()[split[3]] = topic
+                bot.topics[split[3]] = topic
                 bot.dispatch(name: 'topic', channel: split[3], topic: topic)
             } else if (split[0]=='ERROR') { // Error has occurred
                 println split.drop(1).join(' ').substring(1)
@@ -53,7 +51,7 @@ class IRCHandler implements Runnable {
                 def user = NanoBot.parseNickname(split[0])
                 def channel = split[2]
                 def topic = split.drop(3).join(' ').substring(1)
-                bot.getTopics()[channel] = topic
+                bot.topics[channel] = topic
                 bot.dispatch(name: 'topic', channel: channel, topic: topic, user: user)
             } else if (split[1]=='INVITE') { // Invited to Channel
                 def user = NanoBot.parseNickname(split[0])
@@ -67,6 +65,10 @@ class IRCHandler implements Runnable {
                 bot.dispatch(name: 'nick-change', new: newNick, original: original)
             } else if (split[1]=='433') { // Nickname is in Use
                 bot.dispatch(name: 'nick-in-use', original: split[3])
+            } else if (split[1]=='KICK') {
+                if (split[3]==bot.nickname) {
+                    bot.dispatch(name: 'bot-kick' , channel: split[2], user: NanoBot.parseNickname(split[0]))
+                }
             }
             if (bot.debug) println line
         }
