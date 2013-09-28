@@ -24,6 +24,12 @@ compileJava {
     targetCompatibility = '1.6'
 }
 
+jar {
+    manifest {
+        attributes('Main-class': 'TestNanoBot')
+    }
+}
+
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
@@ -36,6 +42,7 @@ artifacts {
 
 dependencies {
     compile 'org.codehaus.groovy:groovy:2.1.7'
+    testCompile 'junit:junit:4.11'
 }
 
 signing {
