@@ -10,7 +10,7 @@ bot.realName = 'NanoBot by kaendfinger'
 bot.enableCommandEvent()
 
 bot.on('ready') {
-    bot.join('#Minetweak')
+    bot.join('#DirectMyFile')
 }
 
 bot.on('connect') {

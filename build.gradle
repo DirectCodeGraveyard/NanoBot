@@ -2,7 +2,7 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-def frameworkVersion = '0.5.1'
+def frameworkVersion = '0.5.2-SNAPSHOT'
 
 def isReleaseVersion = !frameworkVersion.endsWith("SNAPSHOT")
 
