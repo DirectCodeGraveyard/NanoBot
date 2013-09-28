@@ -13,7 +13,7 @@ Using
 
 Examples:
 - [ForgeEssentials Bot](https://github.com/ForgeEssentials/cloaked-octo-robot)
-- [NanoBot Test](https://github.com/kaendfinger/NanoBot/blob/master/src/main/groovy/TestNanoBot.groovy)
+- [NanoBot Test](https://github.com/DirectMyFile/NanoBot/blob/master/src/main/groovy/TestNanoBot.groovy)
 
 Javadocs are coming soon.
 
