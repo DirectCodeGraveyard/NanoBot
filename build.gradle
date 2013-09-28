@@ -1,7 +1,7 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
-def frameworkVersion = '0.5-SNAPSHOT'
+def frameworkVersion = '0.5.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -22,7 +22,7 @@ compileJava {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy:2.1.6'
+    compile 'org.codehaus.groovy:groovy:2.1.7'
 }
 
 if (!hasProperty('sonatypeUsername')) {ext.sonatypeUsername = ''}
@@ -50,9 +50,9 @@ uploadArchives {
                 url 'http://www.directmyfile.com/'
 
                 scm {
-                    url 'https://github.com/kaendfinger/NanoBot/'
-                    connection 'scm:git:git://github.com/kaendfinger/NanoBot.git'
-                    developerConnection 'scm:git:git@github.com:kaendfinger/NanoBot.git'
+                    url 'https://github.com/DirectMyFile/NanoBot/'
+                    connection 'scm:git:git://github.com/DirectMyFile/NanoBot.git'
+                    developerConnection 'scm:git:git@github.com:DirectMyFile/NanoBot.git'
                 }
 
                 issueManagement {
