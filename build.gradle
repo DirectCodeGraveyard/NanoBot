@@ -1,7 +1,10 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: 'signing'
 
-def frameworkVersion = '0.5.1-SNAPSHOT'
+def frameworkVersion = '0.5.1'
+
+def isReleaseVersion = !frameworkVersion.endsWith("SNAPSHOT")
 
 repositories {
     mavenCentral()
@@ -21,8 +24,23 @@ compileJava {
     targetCompatibility = '1.6'
 }
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives sourcesJar
+}
+
 dependencies {
     compile 'org.codehaus.groovy:groovy:2.1.7'
+}
+
+signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
 }
 
 if (!hasProperty('sonatypeUsername')) {ext.sonatypeUsername = ''}
@@ -30,6 +48,7 @@ if (!hasProperty('sonatypePassword')) {ext.sonatypePassword = ''}
 
 uploadArchives {
     repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
         repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
             authentication(userName: sonatypeUsername, password: sonatypePassword)
         }
