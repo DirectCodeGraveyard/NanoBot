@@ -3,6 +3,8 @@ NanoBot
 
 NanoBot is an IRC Framework written in Groovy. Written to be used in a Groovy Environment, it is fast and has support for many IRC features.
 
+[![Build Status](https://minetweak.ci.cloudbees.com/job/NanoBot/badge/icon)](https://minetweak.ci.cloudbees.com/job/NanoBot/)
+
 Building
 --------
 
