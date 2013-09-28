@@ -27,3 +27,5 @@ Features
 - Topic support
 - Error handling
 - Built-in Command Handler
+- Channel Management
+- Scriptable
