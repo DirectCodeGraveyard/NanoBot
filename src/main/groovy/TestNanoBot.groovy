@@ -38,4 +38,8 @@ bot.on('bot-part') {
     println "Left ${it['channel']}"
 }
 
+bot.on('message') {
+    println "<${it.channel}><${it.user}> ${it.message}"
+}
+
 bot.connect()
