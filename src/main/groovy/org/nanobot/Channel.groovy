@@ -6,4 +6,9 @@ class Channel {
     def ArrayList<String> users = [:]
     def ArrayList<String> ops = [:]
     def ArrayList<String> voices = [:]
+
+    @Override
+    String toString() {
+        return name
+    }
 }
