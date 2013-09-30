@@ -46,7 +46,7 @@ class IRCHandler implements Runnable {
                 bot.channels.get(split[3]).topic = topic
                 bot.dispatch(name: 'topic', channel: split[3], topic: topic)
             } else if (split[0]=='ERROR') { // Error has occurred
-                println split.drop(1).join(' ').substring(1)
+                bot.dispatch(name: 'error', message: split.drop(1).join(' ').substring(1))
             } else if (split[1]=='TOPIC') { // Topic was changed
                 def user = NanoBot.parseNickname(split[0])
                 def channel = split[2]
