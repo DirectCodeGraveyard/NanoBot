@@ -6,6 +6,38 @@ def frameworkVersion = '0.5.2-SNAPSHOT'
 
 def isReleaseVersion = !frameworkVersion.endsWith("SNAPSHOT")
 
+def mavenPom = pom {
+            groupId = 'com.directmyfile'
+            version = frameworkVersion
+            artifactId = project.name
+            project {
+                name project.name
+                packaging 'jar'
+                description 'A Groovy-based IRC Framework'
+                inceptionYear '2013'
+                url 'http://www.directmyfile.com/'
+
+                scm {
+                    url 'https://github.com/DirectMyFile/NanoBot/'
+                    connection 'scm:git:git://github.com/DirectMyFile/NanoBot.git'
+                    developerConnection 'scm:git:git@github.com:DirectMyFile/NanoBot.git'
+                }
+
+                issueManagement {
+                    system 'jira'
+                    url 'https://directmyfile.atlassian.net/'
+                }
+
+                licenses {
+                    license {
+                        name 'GNU Lesser General Public License (LGPL), Version 3'
+                        url 'http://www.gnu.org/licenses/lgpl.txt'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
+
 repositories {
     mavenCentral()
 
@@ -69,38 +101,7 @@ uploadArchives {
         snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
             authentication(userName: sonatypeUsername, password: sonatypePassword)
         }
-
-        pom {
-            groupId = 'com.directmyfile'
-            version = frameworkVersion
-            artifactId = project.name
-            project {
-                name project.name
-                packaging 'jar'
-                description 'A Groovy-based IRC Framework'
-                inceptionYear '2013'
-                url 'http://www.directmyfile.com/'
-
-                scm {
-                    url 'https://github.com/DirectMyFile/NanoBot/'
-                    connection 'scm:git:git://github.com/DirectMyFile/NanoBot.git'
-                    developerConnection 'scm:git:git@github.com:DirectMyFile/NanoBot.git'
-                }
-
-                issueManagement {
-                    system 'jira'
-                    url 'https://directmyfile.atlassian.net/'
-                }
-
-                licenses {
-                    license {
-                        name 'GNU Lesser General Public License (LGPL), Version 3'
-                        url 'http://www.gnu.org/licenses/lgpl.txt'
-                        distribution 'repo'
-                    }
-                }
-            }
-        }
+        pom = mavenPom
     }
 }
 
