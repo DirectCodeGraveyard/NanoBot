@@ -35,9 +35,15 @@ task sourcesJar(type: Jar) {
     classifier = 'sources'
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
 artifacts {
     archives jar
     archives sourcesJar
+    archives javadocJar
 }
 
 dependencies {
