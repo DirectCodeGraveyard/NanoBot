@@ -6,6 +6,11 @@ def frameworkVersion = '0.5.2-SNAPSHOT'
 
 def isReleaseVersion = !frameworkVersion.endsWith("SNAPSHOT")
 
+ext {
+   groovy = 'org.codehaus.groovy:groovy-all:2.1.7'
+   packageGroovy = false
+}
+
 def mavenPom = pom {
             groupId = 'com.directmyfile'
             version = frameworkVersion
@@ -79,8 +84,14 @@ artifacts {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy:2.1.7'
+    compile "${groovy}"
     testCompile 'junit:junit:4.11'
+}
+
+jar {
+    if (packageGroovy) {
+        from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 signing {
