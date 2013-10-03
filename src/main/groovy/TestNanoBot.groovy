@@ -2,7 +2,7 @@ import org.nanobot.NanoBot
 
 def useTimer = false
 
-def debug = true
+def debug = false
 
 def timer = { String name, Closure c ->
     if (!useTimer) {c() ; return}
