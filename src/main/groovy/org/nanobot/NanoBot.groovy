@@ -171,6 +171,7 @@ class NanoBot {
 
     void changeNick(newNick) {
         send("NICK $newNick")
+        nickname = newNick
     }
 
     void notice(target, String msg) {

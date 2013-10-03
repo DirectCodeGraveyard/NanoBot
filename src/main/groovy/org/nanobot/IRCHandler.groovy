@@ -13,7 +13,7 @@ class IRCHandler implements Runnable {
         this.bot = bot
         this.reader = reader
         this.writer = writer
-        this.thread = Thread.start({this.run()}, "NanoBot-InputHandler")
+        this.thread = Thread.start("NanoBot-InputHandler", {this.run()})
         bot.dispatch(name: 'connect')
         writer.println 'NICK ' + bot.nickname
         writer.println "USER ${bot.userName} * 8 :${bot.realName}"
@@ -91,7 +91,7 @@ class IRCHandler implements Runnable {
                 if (user==bot.nickname) {
                     def channel = new Channel()
                     channel.name = split[2]
-                    bot.channels.put(channel.name, channel)
+                    bot.channels[channel.name] = channel
                     bot.dispatch(name: 'bot-join', channel: channel)
                     return
                 }
