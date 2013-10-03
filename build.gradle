@@ -120,3 +120,8 @@ uploadArchives {
 task wrapper(type: Wrapper) {
    gradleVersion = "1.8"
 }
+
+task run(dependsOn: 'classes', type: JavaExec) {
+   main = 'TestNanoBot'
+   classpath = sourceSets.main.runtimeClasspath
+}
