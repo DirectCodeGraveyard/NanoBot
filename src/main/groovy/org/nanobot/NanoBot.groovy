@@ -39,13 +39,17 @@ class NanoBot {
         botConfig.save()
     }
 
-    def connect() {
+    /**
+     * Connects to the IRC Server
+     * @return
+     */
+    void connect() {
         socket.connect(new InetSocketAddress(server as String, port as int))
         ircHandler = new IRCHandler(this, socket.inputStream.newReader(), new PrintStream(socket.outputStream))
     }
 
     @CompileStatic
-    def dispatch(data, useThread) {
+    void dispatch(data, useThread) {
         def name = data['name']
         if (name==null || !handlers.containsKey(name)) {return}
         def handlers = handlers.get(name)
@@ -62,11 +66,11 @@ class NanoBot {
     }
 
     @CompileStatic
-    def dispatch(data) {
+    void dispatch(data) {
         dispatch(data, true)
     }
 
-    def on(String name, Closure closure) {
+    void on(String name, Closure closure) {
         if (handlers.containsKey(name)) {
             handlers.get(name).add(closure)
         } else {
@@ -80,16 +84,16 @@ class NanoBot {
         return handlers
     }
 
-    def join(channel) {
+    void join(channel) {
         send("JOIN $channel")
     }
 
-    def part(channel) {
+    void part(channel) {
         send("PART $channel")
         dispatch(name: 'bot-part', channel: channel)
     }
 
-    def msg(target, String msg) {
+    void msg(target, String msg) {
         msg.readLines().each {
             send("PRIVMSG $target :$it")
             sleep(500)
@@ -97,20 +101,20 @@ class NanoBot {
         }
     }
 
-    def send(line) {
+    void send(line) {
         ircHandler.send(line)
     }
 
-    def disconnect(message) {
+    void disconnect(message) {
         send("QUIT :$message")
         while (!socket.closed);
     }
 
-    def disconnect() {
+    void disconnect() {
         disconnect('Bot Disconnecting')
     }
 
-    def enableCommandEvent() {
+    void enableCommandEvent() {
         on('message') {
             def user = it['user']
             def channel = it['channel']
@@ -126,50 +130,50 @@ class NanoBot {
         }
     }
 
-    def identify(password) {
+    void identify(password) {
         msg('NickServ', "identify $password")
     }
 
-    def identify(user, password) {
+    void identify(user, password) {
         msg('NickServ', "identify $user $password")
     }
 
-    def kick(channel, user) {
+    void kick(channel, user) {
         send("KICK $channel $user")
     }
 
-    def ban(channel, user) {
+    void ban(channel, user) {
         mode(channel, user, '+b')
     }
 
-    def kickBan(channel, user) {
+    void kickBan(channel, user) {
         ban(channel, user)
         kick(channel, user)
     }
 
-    def op(channel, user) {
+    void op(channel, user) {
         mode(channel, user, '+o')
     }
 
-    def voice(channel, user) {
+    void voice(channel, user) {
         mode(channel, user, '+v')
     }
 
-    def mode(channel, user, mode) {
+    void mode(channel, user, mode) {
         send("MODE $channel $mode $user")
     }
 
-    def useShutdownHook() {
+    void useShutdownHook() {
         addShutdownHook {
             disconnect('Bot Stopped')
         }
     }
 
-    def changeNick(newNick) {
+    void changeNick(newNick) {
         send("NICK $newNick")
     }
 
-    def notice(target, String msg) {
+    void notice(target, String msg) {
         msg.split('\n').each {
             send("NOTICE $target :$it")
             dispatch(name: 'bot-notice', target: target, message: it)
@@ -187,27 +191,27 @@ class NanoBot {
         return parseNickname.call(hostmask)
     }
 
-    def act(channel, message) {
+    void act(channel, message) {
         msg(channel, "\u0001ACTION ${message}\u0001")
     }
 
-    def deop(channel, user) {
+    void deop(channel, user) {
         mode(channel, user, '-o')
     }
 
-    def devoice(channel, user) {
+    void devoice(channel, user) {
         mode(channel, user, '-v')
     }
 
-    def unban(channel, user) {
+    void unban(channel, user) {
         mode(channel, user, '-b')
     }
 
-    def kick(channel, user, reason) {
+    void kick(channel, user, reason) {
         send("KICK $channel $user :$reason")
     }
 
-    def kickBan(channel, user, reason) {
+    void kickBan(channel, user, reason) {
         ban(channel, user)
         kick(channel, user, reason)
     }
