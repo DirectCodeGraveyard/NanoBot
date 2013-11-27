@@ -3,12 +3,12 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'idea'
 
-def frameworkVersion = '0.5.2-SNAPSHOT'
+def frameworkVersion = '0.5.3-SNAPSHOT'
 
 def isReleaseVersion = !frameworkVersion.endsWith("SNAPSHOT")
 
 ext {
-   groovy = 'org.codehaus.groovy:groovy-all:2.1.7'
+   groovy = 'org.codehaus.groovy:groovy-all:2.2.0'
    packageGroovy = false
 }
 
