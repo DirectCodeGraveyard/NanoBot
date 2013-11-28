@@ -8,7 +8,7 @@ def frameworkVersion = '0.5.3-SNAPSHOT'
 def isReleaseVersion = !frameworkVersion.endsWith("SNAPSHOT")
 
 ext {
-   groovy = 'org.codehaus.groovy:groovy-all:2.2.0'
+   groovy = 'org.codehaus.groovy:groovy-all:2.2.1'
    packageGroovy = false
 }
 
