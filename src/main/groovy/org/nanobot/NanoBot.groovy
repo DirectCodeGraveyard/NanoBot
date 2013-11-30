@@ -9,7 +9,7 @@ class NanoBot {
     def nickname
     HashMap<String, Channel> channels = [:]
     def debug = false
-    def socket = new Socket()
+    Socket socket
     def realName = 'NanoBot'
     def commandPrefix = '!'
     IRCHandler ircHandler
@@ -44,6 +44,7 @@ class NanoBot {
      * @return
      */
     void connect() {
+        socket = new Socket()
         socket.connect(new InetSocketAddress(server as String, port as int))
         ircHandler = new IRCHandler(this, socket.inputStream.newReader(), new PrintStream(socket.outputStream))
     }
@@ -175,7 +176,7 @@ class NanoBot {
     }
 
     void notice(target, String msg) {
-        msg.split('\n').each {
+        msg.readLines().each {
             send("NOTICE $target :$it")
             dispatch(name: 'bot-notice', target: target, message: it)
         }

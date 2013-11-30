@@ -36,13 +36,18 @@ bot.on('post-connect') {
     println 'Sent User Information'
 }
 
-bot.on('command') {
+bot.on('command') { event ->
     timer("Command") {
-        def cmd = it.command
+        def cmd = event.command
+        def channel = event.channel as String
         if (cmd=='hi') {
-            bot.msg(it.channel, 'Hi')
+            bot.msg(event.channel, 'Hi')
+        } else if (cmd=="debug") {
+            bot.msg(channel, "Server: ${bot.server}, Port: ${bot.port}, Nickname: ${bot.nickname}")
+            bot.msg(channel, "Channel: ${channel}, Topic: ${bot.channels[channel].topic}")
+            bot.msg(channel, "")
         } else {
-            bot.msg(it.channel, "> $cmd is not a known command.")
+            bot.msg(event.channel, "> $cmd is not a known command.")
         }
     }
 }
