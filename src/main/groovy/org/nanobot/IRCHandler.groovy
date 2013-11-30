@@ -91,6 +91,7 @@ class IRCHandler implements Runnable {
                 if (user==bot.nickname) {
                     def channel = new Channel()
                     channel.name = split[2]
+                    channel.bot = bot
                     bot.channels[channel.name] = channel
                     bot.dispatch(name: 'bot-join', channel: channel)
                     return

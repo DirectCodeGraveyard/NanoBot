@@ -1,6 +1,7 @@
 package org.nanobot
 
 import groovy.transform.CompileStatic
+import groovy.transform.Memoized
 import org.nanobot.config.BotConfig
 
 class NanoBot {
@@ -94,8 +95,8 @@ class NanoBot {
         dispatch(name: 'bot-part', channel: channel)
     }
 
-    void msg(target, String msg) {
-        msg.readLines().each {
+    void msg(target, msg) {
+        msg.toString().readLines().each {
             send("PRIVMSG $target :$it")
             sleep(500)
             dispatch(name: 'bot-message', target: target, message: it)
@@ -182,15 +183,12 @@ class NanoBot {
         }
     }
 
-    private static parseNickname = { String hostmask ->
+    @Memoized
+    static def parseNickname(String hostmask) {
         if (hostmask.startsWith(':')) {
             hostmask = hostmask.substring(1)
         }
         return hostmask.substring(0, hostmask.indexOf('!'))
-    }.memoize()
-
-    static def parseNickname(String hostmask) {
-        return parseNickname.call(hostmask)
     }
 
     void act(channel, message) {
