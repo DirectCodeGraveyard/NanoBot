@@ -125,7 +125,7 @@ class NanoBot {
                 return
             }
             msg = msg.substring(commandPrefix.length())
-            def split = msg.split(' ')
+            def split = msg.split()
             def args = split.drop(1)
             def cmd = split[0]
             dispatch(name: 'command', user: user, channel: channel, message: msg, split: split, args: args, command: cmd, false)

@@ -21,7 +21,7 @@ class BotManager {
     def connectAll() {
         bots.each {
             it.connect()
-            sleep(1000)
+            sleep(200) // In case people abuse, it at least isn't instant.
         }
     }
 

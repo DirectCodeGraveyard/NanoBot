@@ -64,7 +64,7 @@ compileJava {
 
 jar {
     manifest {
-        attributes('Main-class': 'TestNanoBot')
+        attributes('Main-class': 'org.nanobot.bot.MainIRCBot')
     }
 }
 

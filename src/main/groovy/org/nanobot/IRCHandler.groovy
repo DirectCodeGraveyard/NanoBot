@@ -24,11 +24,11 @@ class IRCHandler implements Runnable {
     @CompileStatic
     void run() {
         reader.eachLine { String line ->
-            def split = line.split(' ')
+            def split = line.tokenize()
             if (bot.debug) println line
             if (split[0]=='PING') {
                 bot.dispatch(name: 'ping', id: split[1].substring(1))
-                writer.println 'PONG ' + split[1]
+                writer.println "PONG ${split[1]}"
                 if (!ready) {
                     ready = true
                     bot.dispatch(name: 'ready')
@@ -69,7 +69,7 @@ class IRCHandler implements Runnable {
                 if (split[3]==bot.nickname) {
                     bot.dispatch(name: 'bot-kick' , channel: split[2], user: NanoBot.parseNickname(split[0]))
                 }
-            } else if (split[1]=='353') {
+            } else if (split[1]=='353') { // Received User List
                 def names = split.drop(5)
                 def channel = bot.channels.get(split[4])
                 names.each { String name ->
@@ -86,7 +86,7 @@ class IRCHandler implements Runnable {
                         channel.users.add(name)
                     }
                 }
-            } else if (split[1]=='JOIN') {
+            } else if (split[1]=='JOIN') { // Somebody joined the Channel
                 def user = NanoBot.parseNickname(split[0])
                 if (user==bot.nickname) {
                     def channel = new Channel()
@@ -103,7 +103,7 @@ class IRCHandler implements Runnable {
             } else if (split[1]=='MODE') {
                 def m = split[3]
                 def channel = bot.channels.get(split[2])
-                if (split.length>=5) {
+                if (split.size()>=5) {
                     def target = split[4]
                     if (m=='+v') {
                         channel.voices.add(target)
@@ -115,6 +115,10 @@ class IRCHandler implements Runnable {
                         channel.voices.remove(target)
                     }
                 }
+            } else if (split[1]=='QUIT') { // Somebody has quit the server
+                def user = NanoBot.parseNickname(split[0])
+                def reason = split.drop(2).join(" ").substring(1)
+                bot.dispatch(name: 'quit', user: user, reason: reason)
             }
         }
     }
