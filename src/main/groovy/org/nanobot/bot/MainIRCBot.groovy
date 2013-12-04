@@ -5,9 +5,11 @@ import org.nanobot.config.BotConfig
 
 class MainIRCBot {
     static NanoBot bot
+    static Map<String, Closure> commands = [:]
 
     static void main(String[] args) {
         bot = new NanoBot(new BotConfig(new File("bot.cfg")))
+        setup()
         connect()
     }
 
@@ -51,6 +53,21 @@ class MainIRCBot {
 
         bot.on('bot-part') {
             println "Left ${it.channel}"
+        }
+
+        bot.on('command') { event ->
+            def command = event.command as String
+
+            if (commands.containsKey(command)) {
+                event.reply = {
+                    bot.msg(event.channel, it)
+                }
+                commands[command](event)
+            }
+        }
+
+        commands["hi"] = {
+            it.reply("> Hello!")
         }
     }
 }
