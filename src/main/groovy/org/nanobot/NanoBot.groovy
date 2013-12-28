@@ -82,10 +82,6 @@ class NanoBot {
         }
     }
 
-    def getHandlers() {
-        return handlers
-    }
-
     void join(channel) {
         send("JOIN $channel")
     }
@@ -218,5 +214,21 @@ class NanoBot {
     void kickBan(channel, user, reason) {
         ban(channel, user)
         kick(channel, user, reason)
+    }
+
+    boolean asBoolean() {
+    	return socket != null && socket.connected
+    }
+
+    void call() {
+    	if (!this) {
+    		bot.connect()
+    	}
+    }
+
+    void call(args) {
+    	args.each {
+    		send(it as String)
+    	}
     }
 }
