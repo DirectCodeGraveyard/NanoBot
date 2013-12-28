@@ -140,6 +140,10 @@ class NanoBot {
         msg('NickServ', "identify $user $password")
     }
 
+    void password(password) {
+    	send("PASS ${password}")
+    }
+
     void kick(channel, user) {
         send("KICK $channel $user")
     }
