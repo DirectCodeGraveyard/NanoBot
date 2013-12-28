@@ -118,7 +118,7 @@ uploadArchives {
 }
 
 task wrapper(type: Wrapper) {
-   gradleVersion = "1.9"
+   gradleVersion = "1.10"
 }
 
 task run(dependsOn: 'classes', type: JavaExec) {
