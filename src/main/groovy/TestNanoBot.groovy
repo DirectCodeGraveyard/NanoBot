@@ -18,7 +18,7 @@ timer("Creating Bot") {
 
 bot.server = 'irc.esper.net'
 bot.port = 6667
-bot.nickname = 'NanoBot'
+bot.nickname = 'TheNanoBot'
 bot.realName = 'NanoBot by kaendfinger'
 bot.debug = debug
 
@@ -62,6 +62,18 @@ bot.on('bot-join') {
 
 bot.on('bot-part') {
     println "Left ${it.channel}"
+}
+
+bot.on('join') {
+    println "${it.user} joined ${it.channel}"
+}
+
+bot.on('part') {
+    println "${it.user} left ${it.channel}"
+}
+
+bot.on('quit') {
+    println "${it.user} quit (${it.message ?: "Client Quit"})"
 }
 
 bot.on('message') {
