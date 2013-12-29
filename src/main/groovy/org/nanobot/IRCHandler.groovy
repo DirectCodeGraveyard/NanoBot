@@ -83,7 +83,7 @@ class IRCHandler implements Runnable {
                         channel.users.add(name.substring(1))
                         channel.voices.add(name.substring(1))
                     } else {
-                        channel.users.add(name)
+                        channel.users += name
                     }
                 }
             } else if (split[1] == 'JOIN') { // Somebody joined the Channel
@@ -96,9 +96,11 @@ class IRCHandler implements Runnable {
                     bot.dispatch(name: 'bot-join', channel: channel)
                     return
                 }
+                bot.dispatch(name: 'join', user: user, channel: split[2])
                 bot.channels[split[2]].users += (user as String)
             } else if (split[1] == 'PART') {
                 def user = NanoBot.parseNickname(split[0])
+                bot.dispatch(name: 'part', user: user, channel: split[2])
                 removeUser(split[2], user)
             } else if (split[1] == 'MODE') {
                 def m = split[3]
@@ -118,7 +120,7 @@ class IRCHandler implements Runnable {
             } else if (split[1] == 'QUIT') { // Somebody has quit the server
                 def user = NanoBot.parseNickname(split[0])
                 def reason = split.drop(2).join(" ").substring(1)
-                bot.channels.keySet().each {
+                bot.channels.keySet().each { String it ->
                     removeUser(it, user)
                 }
                 bot.dispatch(name: 'quit', user: user, reason: reason)
