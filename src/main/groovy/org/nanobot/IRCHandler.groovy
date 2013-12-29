@@ -96,19 +96,19 @@ class IRCHandler implements Runnable {
                     bot.dispatch(name: 'bot-join', channel: channel)
                     return
                 }
-                bot.channels.get(split[2]).users.add(user as String)
+                bot.channels[split[2]].users += (user as String)
             } else if (split[1] == 'PART') {
                 def user = NanoBot.parseNickname(split[0])
                 removeUser(split[2], user)
             } else if (split[1] == 'MODE') {
                 def m = split[3]
-                def channel = bot.channels.get(split[2])
+                def channel = bot.channels[split[2]]
                 if (split.size() >= 5) {
                     def target = split[4]
                     if (m == '+v') {
-                        channel.voices.add(target)
+                        channel.voices += target
                     } else if (m == '+o') {
-                        channel.ops.add(target)
+                        channel.ops += target
                     } else if (m == '-o') {
                         channel.ops.remove(target)
                     } else if (m == '-v') {
@@ -118,6 +118,9 @@ class IRCHandler implements Runnable {
             } else if (split[1] == 'QUIT') { // Somebody has quit the server
                 def user = NanoBot.parseNickname(split[0])
                 def reason = split.drop(2).join(" ").substring(1)
+                bot.channels.keySet().each {
+                    removeUser(it, user)
+                }
                 bot.dispatch(name: 'quit', user: user, reason: reason)
             }
         }
