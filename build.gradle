@@ -9,7 +9,7 @@ def isReleaseVersion = !frameworkVersion.endsWith("SNAPSHOT")
 
 ext {
    groovy = 'org.codehaus.groovy:groovy-all:2.2.1'
-   packageGroovy = false
+   packageGroovy = true
 }
 
 def mavenPom = pom {
@@ -90,9 +90,8 @@ dependencies {
 }
 
 jar {
-    if (packageGroovy) {
+    if (packageGroovy)
         from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
 }
 
 signing {

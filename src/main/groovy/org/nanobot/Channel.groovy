@@ -1,12 +1,12 @@
 package org.nanobot
 
 class Channel {
-    def NanoBot bot
-    def String topic
-    def String name
-    def ArrayList<String> users = []
-    def ArrayList<String> ops = []
-    def ArrayList<String> voices = []
+    NanoBot bot
+    String topic
+    String name
+    List<String> users = []
+    List<String> ops = []
+    List<String> voices = []
 
     @Override
     String toString() {

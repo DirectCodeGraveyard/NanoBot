@@ -11,3 +11,6 @@
 /classes/
 /builds.json
 /build-number.txt
+/scripts/
+/bot.cfg
+atlassian-ide-plugin.xml

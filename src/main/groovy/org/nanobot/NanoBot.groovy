@@ -222,7 +222,7 @@ class NanoBot {
 
     void call() {
     	if (!this) {
-    		bot.connect()
+    		connect()
     	}
     }
 

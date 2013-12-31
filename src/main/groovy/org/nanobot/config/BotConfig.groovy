@@ -1,9 +1,10 @@
 package org.nanobot.config
 
+import org.nanobot.Utils
+
 class BotConfig {
-    def File file
-    private slurper = new ConfigSlurper()
-    def config = new ConfigObject()
+    File file
+    ConfigObject config = new ConfigObject()
 
 
     BotConfig(File file) {
@@ -13,7 +14,7 @@ class BotConfig {
 
     private void initConfig() {
         file.createNewFile()
-        config = slurper.parse(file.toURI().toURL())
+        config = Utils.parseConfig(file)
         getServer().get('host', 'irc.esper.net')
         getServer().get('port', 6667)
         getBot().get('nickname', 'SuperNanoBot')
@@ -25,7 +26,7 @@ class BotConfig {
         if (!file.exists()) {
             initConfig()
         }
-        config = slurper.parse(file.toURI().toURL())
+        config = Utils.parseConfig(file)
     }
 
     def save() {
