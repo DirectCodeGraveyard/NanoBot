@@ -45,6 +45,8 @@ class NanoBot {
      * @return
      */
     void connect() {
+    	if (socket != null && socket.connected)
+    		throw new RuntimeException("Bot is already connected!")
         socket = new Socket()
         socket.connect(new InetSocketAddress(server as String, port as int))
         ircHandler = new IRCHandler(this, socket.inputStream.newReader(), new PrintStream(socket.outputStream))
