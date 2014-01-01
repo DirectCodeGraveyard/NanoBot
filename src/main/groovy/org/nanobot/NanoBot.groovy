@@ -10,11 +10,11 @@ class NanoBot {
     def nickname
     HashMap<String, Channel> channels = [:]
     def debug = false
-    Socket socket
+    private Socket socket
     def realName = 'NanoBot'
     def commandPrefix = '!'
-    IRCHandler ircHandler
-    HashMap<String, ArrayList<Closure>> handlers = [:]
+    private IRCHandler ircHandler
+    final HashMap<String, ArrayList<Closure>> handlers = [:]
     def userName = 'NanoBot'
 
     NanoBot() {}
