@@ -32,7 +32,7 @@ class MainIRCBot {
             scriptDir.mkdirs()
 
         // This is kind of messy, but we can live with it.
-        config.setDefaultConfig("server = [\n        host: \"irc.esper.net\",\n        port: 6667\n]\n\nbot = [\n        nickname: \"SuperNanoBot\",\n        username: \"SuperNanoBot\",\n        realname: \"NanoBot\"\n        channels: [\n            \"#DirectMyFile\"\n        ]\n]\n")
+        config.setDefaultConfig("server = [\n        host: \"irc.esper.net\",\n        port: 6667\n]\n\nbot = [\n        nickname: \"SuperNanoBot\",\n        username: \"SuperNanoBot\",\n        realname: \"NanoBot\",\n        channels: [\n            \"#DirectMyFile\"\n        ]\n]\n")
 
         config.load()
 
