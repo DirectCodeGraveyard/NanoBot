@@ -8,14 +8,14 @@ class NanoBot {
     def server
     def port
     def nickname
-    HashMap<String, Channel> channels = [:]
-    def debug = false
+    final HashMap<String, Channel> channels = [:]
     private Socket socket
     def realName = 'NanoBot'
     def commandPrefix = '!'
     private IRCHandler ircHandler
     final HashMap<String, ArrayList<Closure>> handlers = [:]
     def userName = 'NanoBot'
+    final StateContainer states = new StateContainer()
 
     NanoBot() {}
 
@@ -42,11 +42,12 @@ class NanoBot {
 
     /**
      * Connects to the IRC Server
-     * @return
      */
     void connect() {
     	if (socket != null && socket.connected)
     		throw new RuntimeException("Bot is already connected!")
+        channels.clear()
+        states.reset()
         socket = new Socket()
         socket.connect(new InetSocketAddress(server as String, port as int))
         ircHandler = new IRCHandler(this, socket.inputStream.newReader(), new PrintStream(socket.outputStream))
@@ -187,9 +188,8 @@ class NanoBot {
 
     @Memoized
     static def parseNickname(String hostmask) {
-        if (hostmask.startsWith(':')) {
+        if (hostmask.startsWith(':'))
             hostmask = hostmask.substring(1)
-        }
         return hostmask.substring(0, hostmask.indexOf('!'))
     }
 
