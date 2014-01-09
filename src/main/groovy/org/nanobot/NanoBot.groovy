@@ -4,6 +4,9 @@ import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 import org.nanobot.config.BotConfig
 
+/**
+ * An IRC Bot Written for Simplicity but usefulness
+ */
 class NanoBot {
     def server
     def port
@@ -13,9 +16,10 @@ class NanoBot {
     def realName = 'NanoBot'
     def commandPrefix = '!'
     private IRCHandler ircHandler
-    final HashMap<String, ArrayList<Closure>> handlers = [:]
+    final Map<String, List<Closure>> handlers = [:].withDefault { [] }
     def userName = 'NanoBot'
     final StateContainer states = new StateContainer()
+    final EventProxy events = new EventProxy(this)
 
     NanoBot() {}
 
@@ -53,76 +57,111 @@ class NanoBot {
         ircHandler = new IRCHandler(this, socket.inputStream.newReader(), new PrintStream(socket.outputStream))
     }
 
+    /**
+     * Dispatches an Event
+     * @param data Event Parameters
+     * @param useThread whether to use a thread
+     */
     @CompileStatic
     void dispatch(data, useThread) {
-        def name = data['name']
-        if (name==null || !handlers.containsKey(name)) {return}
-        def handlers = handlers.get(name)
-        handlers.each { Closure it ->
-            it.delegate = this
-            if (useThread) {
+        def name = data['name'] as String
+        if (name == null || !handlers.containsKey(name))
+            return
+        def handlers = handlers[name]
+        handlers.each { Closure handler ->
+            handler.delegate = this
+            if (useThread)
                 Thread.startDaemon { ->
-                    it.call(data)
+                    handler.call(data)
                 }
-            } else {
-                it.call(data)
-            }
+            else
+                handler.call(data)
         }
     }
 
+    /**
+     * Dispatches an Event
+     * @param data Event Parameters
+     */
     @CompileStatic
     void dispatch(data) {
         dispatch(data, true)
     }
 
-    void on(String name, Closure closure) {
-        if (handlers.containsKey(name)) {
-            handlers.get(name).add(closure)
-        } else {
-            def newList = []
-            newList.add(closure)
-            handlers.put(name, newList)
-        }
+    /**
+     * Registers an Event Handler
+     * @param name Event Name
+     * @param handler Event Handler
+     * @see EventProxy
+     */
+    void on(String name, Closure handler) {
+        handlers[name] += handler
     }
 
+    /**
+     * Joins a Channel
+     * @param channel Channel to Join
+     */
     void join(channel) {
         send("JOIN $channel")
     }
 
+    /**
+     * Leaves a Channel
+     * @param channel Channel to Leave
+     */
     void part(channel) {
         send("PART $channel")
         dispatch(name: 'bot-part', channel: channel)
     }
 
+    /**
+     * Messages a Target
+     * @param target Target
+     * @param msg Message
+     */
     void msg(target, msg) {
         msg.toString().readLines().each {
             send("PRIVMSG $target :$it")
-            sleep(500)
+            sleep(100)
             dispatch(name: 'bot-message', target: target, message: it)
         }
     }
 
+    /**
+     * Send a Raw Line through IRC
+     * @param line
+     */
     void send(line) {
         ircHandler.send(line)
     }
 
+    /**
+     * Quit the Server
+     * @param message Message to Send
+     */
     void disconnect(message) {
         send("QUIT :$message")
         while (!socket.closed);
     }
 
+    /**
+     * Quit the Server with message 'Bot Disconnecting'
+     */
     void disconnect() {
         disconnect('Bot Disconnecting')
     }
 
+    /**
+     * Setup Command Event to be usable
+     */
     void enableCommandEvent() {
         on('message') {
             def user = it['user']
             def channel = it['channel']
             def msg = (it['message'] as String).trim()
-            if (!msg.startsWith(commandPrefix)) {
+            if (!msg.startsWith(commandPrefix))
                 return
-            }
             msg = msg.substring(commandPrefix.length())
             def split = msg.split()
             def args = split.drop(1)
@@ -131,54 +170,110 @@ class NanoBot {
         }
     }
 
+    /**
+     * Identifies with NickServ
+     * @param password Password
+     */
     void identify(password) {
         msg('NickServ', "identify $password")
     }
 
+    /**
+     * Identifies with NickServ
+     * @param user Username
+     * @param password Password
+     */
     void identify(user, password) {
         msg('NickServ', "identify $user $password")
     }
 
+    /**
+     * Sends the Server Password
+     * @param password Server Password
+     */
     void password(password) {
     	send("PASS ${password}")
     }
 
+    /**
+     * Kicks a User from a Channel
+     * @param channel Channel
+     * @param user User
+     */
     void kick(channel, user) {
         send("KICK $channel $user")
     }
 
+    /**
+     * Bans a User from a Channel
+     * @param channel Channel
+     * @param user User
+     */
     void ban(channel, user) {
         mode(channel, user, '+b')
     }
 
+    /**
+     * Kicks then bans a User from a Channel
+     * @param channel Channel
+     * @param user user
+     */
     void kickBan(channel, user) {
         ban(channel, user)
         kick(channel, user)
     }
 
+    /**
+     * Ops a User in a Channel
+     * @param channel Channel
+     * @param user User
+     */
     void op(channel, user) {
         mode(channel, user, '+o')
     }
 
+    /**
+     * Voices a User in a Channel
+     * @param channel Channel
+     * @param user User
+     */
     void voice(channel, user) {
         mode(channel, user, '+v')
     }
 
+    /**
+     * Gives the User in the Channel a Mode
+     * @param channel Channel
+     * @param user User
+     * @param mode Mode
+     */
     void mode(channel, user, mode) {
         send("MODE $channel $mode $user")
     }
 
+    /**
+     * Instructs NanoBot to register a shutdown hook to Quit the Server
+     */
     void useShutdownHook() {
         addShutdownHook {
             disconnect('Bot Stopped')
         }
     }
 
+    /**
+     * Changes the Bots Nickname
+     * @param newNick new nickname
+     */
     void changeNick(newNick) {
         send("NICK $newNick")
         nickname = newNick
     }
 
+    /**
+     * Sends a Notice to the Target
+     * @param target Target
+     * @param msg Message
+     */
     void notice(target, String msg) {
         msg.readLines().each {
             send("NOTICE $target :$it")
@@ -186,6 +281,11 @@ class NanoBot {
         }
     }
 
+    /**
+     * Parses a Hostmask to retrieve the Nickname
+     * @param hostmask Hostmask to parse
+     * @return nickname
+     */
     @Memoized
     static def parseNickname(String hostmask) {
         if (hostmask.startsWith(':'))
@@ -193,26 +293,58 @@ class NanoBot {
         return hostmask.substring(0, hostmask.indexOf('!'))
     }
 
+    /**
+     * Sends an Action in a Channel
+     * @param channel Channel
+     * @param message Message
+     */
     void act(channel, message) {
         msg(channel, "\u0001ACTION ${message}\u0001")
     }
 
+    /**
+     * Deops a User in a Channel
+     * @param channel Channel
+     * @param user User
+     */
     void deop(channel, user) {
         mode(channel, user, '-o')
     }
 
+    /**
+     * Devoices a User in a Channel
+     * @param channel Channel
+     * @param user User
+     */
     void devoice(channel, user) {
         mode(channel, user, '-v')
     }
 
+    /**
+     * Unbans a User from a Channel
+     * @param channel Channel
+     * @param user User
+     */
     void unban(channel, user) {
         mode(channel, user, '-b')
     }
 
+    /**
+     * Kicks a User from a Channel with a Reason
+     * @param channel Channel
+     * @param user User
+     * @param reason Reason
+     */
     void kick(channel, user, reason) {
         send("KICK $channel $user :$reason")
     }
 
+    /**
+     * Kicks then bans a User from a Channel with a Reason
+     * @param channel Channel
+     * @param user User
+     * @param reason Reason
+     */
     void kickBan(channel, user, reason) {
         ban(channel, user)
         kick(channel, user, reason)
@@ -222,12 +354,19 @@ class NanoBot {
     	return socket != null && socket.connected
     }
 
+    /**
+     * Connects to the Server if not already connected
+     */
     void call() {
     	if (!this) {
     		connect()
     	}
     }
 
+    /**
+     * Sends the lines specified as arguments to the server
+     * @param args
+     */
     void call(args) {
     	args.each {
     		send(it as String)

@@ -20,7 +20,7 @@ class IRCHandler implements Runnable {
         send("NICK ${bot.nickname}")
         send("USER ${bot.userName} * 8 :${bot.realName}")
         bot.dispatch(name: 'post-connect')
-        bot.states.off("connect")
+        bot.states.toggle("connect")
         bot.states.on("connected")
     }
 
@@ -48,7 +48,7 @@ class IRCHandler implements Runnable {
                 bot.dispatch(name: 'pm', user: user, message: msg)
             } else if (split[1] == '332') { // Topic is being sent on join
                 def topic = split.drop(4).join(' ').substring(1)
-                bot.channels.get(split[3]).topic = topic
+                bot.channels[split[3]]?.topic = topic
                 bot.dispatch(name: 'topic', channel: split[3], topic: topic)
             } else if (split[0] == 'ERROR') { // Error has occurred
                 bot.dispatch(name: 'error', message: split.drop(1).join(' ').substring(1))

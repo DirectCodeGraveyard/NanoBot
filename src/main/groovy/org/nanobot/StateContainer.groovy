@@ -1,5 +1,8 @@
 package org.nanobot
 
+/**
+ * Holds basic on/off statuses for different parts of a bot
+ */
 class StateContainer {
     private final Map<String, Boolean> states = [:].withDefault { false }
 
@@ -15,6 +18,10 @@ class StateContainer {
         return states[name]
     }
 
+    void toggle(String name) {
+        states[name] = !states[name]
+    }
+
     void reset() {
         states.clear()
     }
@@ -22,6 +29,6 @@ class StateContainer {
     Set<String> current() {
         return states.findAll {
             it.value
-        }.keySet().asImmutable()
+        }.keySet().asImmutable() // Immutable to prevent people from modifying states in bulk
     }
 }
