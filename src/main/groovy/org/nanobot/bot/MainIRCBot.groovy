@@ -14,7 +14,6 @@ class MainIRCBot {
     static void main(String[] args) {
         bot = new NanoBot()
         setup()
-        loadScripts()
         connect()
     }
 
@@ -32,7 +31,7 @@ class MainIRCBot {
             scriptDir.mkdirs()
 
         // This is kind of messy, but we can live with it.
-        config.setDefaultConfig("server = [\n        host: \"irc.esper.net\",\n        port: 6667\n]\n\nbot = [\n        nickname: \"SuperNanoBot\",\n        username: \"SuperNanoBot\",\n        realname: \"NanoBot\",\n        channels: [\n            \"#DirectMyFile\"\n        ]\n]\n")
+        config.setDefaultConfig("server = [\n        host: \"irc.esper.net\",\n        port: 6667\n]\n\nbot = [\n        nickname: \"SuperNanoBot\",\n        username: \"SuperNanoBot\",\n        realname: \"NanoBot\",\n        channels: [\n            \"#DirectMyFile\"\n        ],\n        admins: []\n]\n")
 
         config.load()
 
@@ -62,11 +61,14 @@ class MainIRCBot {
         bot.realName = botConfig["realname"]
         bot.commandPrefix = botConfig["commandPrefix"]
 
+        loadScripts()
+
         bot.on('connect') {
             println "Connected."
         }
 
         bot.on('ready') {
+            sleep(1000)
             botConfig["channels"].each {
                 bot.join(it)
             }

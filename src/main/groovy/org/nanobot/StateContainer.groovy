@@ -4,7 +4,7 @@ package org.nanobot
  * Holds basic on/off statuses for different parts of a bot
  */
 class StateContainer {
-    private final Map<String, Boolean> states = [:].withDefault { false }
+    private final Map<String, Boolean> states = [:]
 
     void on(String name) {
         states[name] = true
@@ -15,11 +15,11 @@ class StateContainer {
     }
 
     boolean has(String name) {
-        return states[name]
+        return states[name] ?: false
     }
 
     void toggle(String name) {
-        states[name] = !states[name]
+        states[name] = !has(name)
     }
 
     void reset() {

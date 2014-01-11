@@ -18,6 +18,7 @@ class NanoBot {
     private IRCHandler ircHandler
     final Map<String, List<Closure>> handlers = [:].withDefault { [] }
     def userName = 'NanoBot'
+    def debug = false
     final StateContainer states = new StateContainer()
     final EventProxy events = new EventProxy(this)
 
