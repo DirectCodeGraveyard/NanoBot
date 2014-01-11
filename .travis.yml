@@ -1,0 +1,3 @@
+language: groovy
+script:
+  - "TERM=dumb ./gradlew assemble"
