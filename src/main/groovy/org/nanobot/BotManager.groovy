@@ -11,7 +11,7 @@ class BotManager {
 
     def cloneBot(NanoBot original, nickname) {
         def bot = addBot(original.server, original.port, nickname)
-        bot.handlers = original.handlers
+        bot.handlers.putAll(original.handlers)
         bot.userName = original.userName
         bot.realName = original.realName
         bot.commandPrefix = original.commandPrefix
