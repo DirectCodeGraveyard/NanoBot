@@ -93,6 +93,14 @@ class MainIRCBot {
             println "<${it.channel}><${it.user}> ${it.message}"
         }
 
+        bot.on('ctcp') {
+            if (it.type == "ACTION") {
+                println "<${it.channel}> * ${it.user} ${it.message}"
+            } else {
+                println "<${it.channel}> Received '${it.type}' from '${it.user}' containing '${it.message}'"
+            }
+        }
+
         bot.on('pm') {
             println "<${it.user}> ${it.message}"
         }

@@ -41,10 +41,21 @@ class IRCHandler implements Runnable {
             } else if (split[1] == 'PRIVMSG' && split[2].startsWith('#')) { // Channel Message
                 def sender = NanoBot.parseNickname(split[0])
                 def msg = split.drop(3).join(' ').substring(1)
-                bot.dispatch(name: 'message', channel: bot.channels[split[2]], user: sender, message: msg)
+                if (msg.startsWith('\u0001')) {
+                    def type = msg.substring(1, msg.indexOf(" "))
+                    msg = msg.substring(type.size() + 2).replaceAll('\u0001', '')
+                    bot.dispatch(name: "ctcp", user: sender, channel: bot.channels[split[2]], type: type, message: msg)
+                } else {
+                    bot.dispatch(name: 'message', channel: bot.channels[split[2]], user: sender, message: msg)
+                }
             } else if (split[1] == 'PRIVMSG' && !(split[2].startsWith('#'))) { // Private Message
                 def user = NanoBot.parseNickname(split[0])
                 def msg = split.drop(3).join(' ').substring(1)
+                if (msg.startsWith('\u0001')) {
+                    msg = msg.substring(1)
+                    def type = msg.substring(0, msg.indexOf(" "))
+                    bot.dispatch(name: "priv-ctcp", user: user, type: type, message: msg.substring(type.size()))
+                }
                 bot.dispatch(name: 'pm', user: user, message: msg)
             } else if (split[1] == '332') { // Topic is being sent on join
                 def topic = split.drop(4).join(' ').substring(1)

@@ -351,6 +351,10 @@ class NanoBot {
         kick(channel, user, reason)
     }
 
+    /**
+     * Gives Groovy Truth to the Bot
+     * @return true if bot is connected
+     */
     boolean asBoolean() {
     	return socket != null && socket.connected
     }
@@ -366,7 +370,7 @@ class NanoBot {
 
     /**
      * Sends the lines specified as arguments to the server
-     * @param args
+     * @param args Lines to send to the server
      */
     void call(args) {
     	args.each {
