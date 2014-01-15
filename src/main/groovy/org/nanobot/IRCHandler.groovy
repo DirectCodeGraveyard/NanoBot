@@ -99,14 +99,17 @@ class IRCHandler implements Runnable {
                         channel.users.add(name.substring(1))
                         channel.voices.add(name.substring(1))
                     } else {
-                        channel.users += name
+                        channel?.users?.add(name)
                     }
                 }
             } else if (split[1] == 'JOIN') { // Somebody joined the Channel
                 def user = NanoBot.parseNickname(split[0])
                 if (user == bot.nickname) {
                     def channel = new Channel()
-                    channel.name = split[2]
+                    def name = split[2]
+                    if (name.startsWith(":"))
+                        name = name.substring(1)
+                    channel.name = name
                     channel.bot = bot
                     bot.channels[channel.name] = channel
                     bot.dispatch(name: 'bot-join', channel: channel)
