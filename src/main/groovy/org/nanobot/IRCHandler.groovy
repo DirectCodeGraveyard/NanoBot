@@ -116,7 +116,7 @@ class IRCHandler implements Runnable {
                     return
                 }
                 bot.dispatch(name: 'join', user: user, channel: bot.channels[split[2]])
-                bot.channels[split[2]].users += (user as String)
+                bot.channels[split[2]]?.users += (user as String)
             } else if (split[1] == 'PART') {
                 def user = NanoBot.parseNickname(split[0])
                 bot.dispatch(name: 'part', user: user, channel: split[2])
