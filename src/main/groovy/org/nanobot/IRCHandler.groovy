@@ -104,12 +104,12 @@ class IRCHandler implements Runnable {
                 }
             } else if (split[1] == 'JOIN') { // Somebody joined the Channel
                 def user = NanoBot.parseNickname(split[0])
+                def chan = split[2]
+                if (chan.startsWith(":"))
+                    chan = chan.substring(1)
                 if (user == bot.nickname) {
                     def channel = new Channel()
-                    def name = split[2]
-                    if (name.startsWith(":"))
-                        name = name.substring(1)
-                    channel.name = name
+                    channel.name = chan
                     channel.bot = bot
                     bot.channels[channel.name] = channel
                     bot.dispatch(name: 'bot-join', channel: channel)
@@ -155,8 +155,8 @@ class IRCHandler implements Runnable {
 
     def removeUser(String channel, user) {
         def c = bot.channels[channel]
-        c.users.remove(user)
-        c.ops.remove(user)
-        c.voices.remove(user)
+        c?.users?.remove(user)
+        c?.ops?.remove(user)
+        c?.voices?.remove(user)
     }
 }
