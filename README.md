@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/DirectMyFile/NanoBot.png?label=ready)](https://waffle.io/DirectMyFile/NanoBot)
 NanoBot
 =======
 
