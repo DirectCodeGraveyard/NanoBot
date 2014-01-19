@@ -49,6 +49,10 @@ class Channel {
         bot.kick(name, target)
     }
 
+    def kick(target, reason) {
+        bot.kick(name, target, reason)
+    }
+
     def kickBan(target) {
         bot.kickBan(name, target)
     }
