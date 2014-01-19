@@ -70,7 +70,9 @@ class NanoBot {
             return
         def handlers = handlers[name] as List<Closure>
         def execute = { ->
-            handlers*.call()
+            handlers.each { Closure handler ->
+                handler.call(data)
+            }
         }
         if (useThread)
             Thread.startDaemon("BotEvent[${name}]", execute)
@@ -300,7 +302,7 @@ class NanoBot {
     protected static def parseHostmask(String hostmask) {
         if (hostmask.startsWith(':'))
             hostmask = hostmask.substring(1)
-        def nickname = hostmask[0..hostmask.indexOf("!")]
+        def nickname = hostmask[0..hostmask.indexOf("!") - 1]
         def host = hostmask[hostmask.indexOf("@")..hostmask.size() - 1]
         return [
                 nickname: nickname,
