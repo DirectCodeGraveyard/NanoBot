@@ -296,7 +296,8 @@ class NanoBot {
      * @return nickname
      */
     @Memoized(maxCacheSize = 20)
-    protected static def parseNickname(String hostmask) {
+    public
+    static def parseNickname(String hostmask) {
         return parseHostmask(hostmask)["nickname"]
     }
 

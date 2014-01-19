@@ -4,7 +4,7 @@ import org.junit.Test
 import org.nanobot.NanoBot
 import static org.junit.Assert.*
 
-class NicknameParsing {
+class HostmaskParsingTest {
     @Test
     void parseHostmask() {
         def mask = 'samrg472!my.mom.is.on.twitter.panicbnc.us'
