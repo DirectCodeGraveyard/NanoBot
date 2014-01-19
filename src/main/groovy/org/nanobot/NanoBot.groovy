@@ -68,16 +68,14 @@ class NanoBot {
         def name = data['name'] as String
         if (name == null || !handlers.containsKey(name))
             return
-        def handlers = handlers[name]
-        handlers.each { Closure handler ->
-            handler.delegate = this
-            if (useThread)
-                Thread.startDaemon { ->
-                    handler.call(data)
-                }
-            else
-                handler.call(data)
+        def handlers = handlers[name] as List<Closure>
+        def execute = { ->
+            handlers*.call()
         }
+        if (useThread)
+            Thread.startDaemon("BotEvent[${name}]", execute)
+        else
+            execute()
     }
 
     /**
@@ -96,6 +94,7 @@ class NanoBot {
      * @see EventProxy
      */
     void on(String name, Closure handler) {
+        handler.delegate = this
         handlers[name] += handler
     }
 
@@ -275,8 +274,8 @@ class NanoBot {
      * @param target Target
      * @param msg Message
      */
-    void notice(target, String msg) {
-        msg.readLines().each {
+    void notice(target, msg) {
+        msg.toString().readLines().each {
             send("NOTICE $target :$it")
             dispatch(name: 'bot-notice', target: target, message: it)
         }
@@ -287,11 +286,26 @@ class NanoBot {
      * @param hostmask Hostmask to parse
      * @return nickname
      */
-    @Memoized
-    static def parseNickname(String hostmask) {
+    @Memoized(maxCacheSize = 20)
+    protected static def parseNickname(String hostmask) {
+        return parseHostmask(hostmask)["nickname"]
+    }
+
+    /**
+     * Parses a Hostmask into different parts
+     * @param hostmask
+     * @return map of nickname, and host
+     */
+    @Memoized(maxCacheSize = 20)
+    protected static def parseHostmask(String hostmask) {
         if (hostmask.startsWith(':'))
             hostmask = hostmask.substring(1)
-        return hostmask.substring(0, hostmask.indexOf('!'))
+        def nickname = hostmask[0..hostmask.indexOf("!")]
+        def host = hostmask[hostmask.indexOf("@")..hostmask.size() - 1]
+        return [
+                nickname: nickname,
+                host: host
+        ]
     }
 
     /**
@@ -363,9 +377,8 @@ class NanoBot {
      * Connects to the Server if not already connected
      */
     void call() {
-    	if (!this) {
+    	if (!this)
     		connect()
-    	}
     }
 
     /**

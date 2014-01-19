@@ -10,6 +10,7 @@ class MainIRCBot {
     static Map<String, Closure> commands = [:]
     static config = new GConfig(new File("bot.cfg"))
     static scriptDir = new File("scripts")
+    static List<String> admins
 
     static void main(String[] args) {
         bot = new NanoBot()
@@ -53,7 +54,7 @@ class MainIRCBot {
                 admins: []
         ])
 
-        def admins = botConfig["admins"] as List<String>
+        admins = botConfig["admins"] as List<String>
 
         bot.server = serverConfig["host"]
         bot.port = serverConfig["port"]

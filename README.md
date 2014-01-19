@@ -1,4 +1,4 @@
-# NanoBot [![Stories in Ready](https://badge.waffle.io/DirectMyFile/NanoBot.png?label=ready)](https://waffle.io/DirectMyFile/NanoBot) [![Build Status](https://minetweak.ci.cloudbees.com/job/NanoBot/badge/icon)](https://minetweak.ci.cloudbees.com/job/NanoBot/)
+# NanoBot [![Stories in Ready](https://badge.waffle.io/DirectMyFile/NanoBot.png?label=ready)](https://waffle.io/DirectMyFile/NanoBot) [![Build Status](https://travis-ci.org/DirectMyFile/NanoBot.png?branch=master)](https://travis-ci.org/DirectMyFile/NanoBot)
 
 
 NanoBot is an IRC Framework written in Groovy. Written to be used in a Groovy Environment, it is fast and has support for many IRC features.
@@ -12,8 +12,6 @@ Use the [Gradle Wrapper](http://www.gradle.org/docs/current/userguide/gradle_wra
 Examples:
 - [ForgeEssentials Bot](https://github.com/ForgeEssentials/cloaked-octo-robot)
 - [NanoBot Test](https://github.com/DirectMyFile/NanoBot/blob/master/src/main/groovy/TestNanoBot.groovy)
-
-Javadocs are coming soon.
 
 ## Features
 
