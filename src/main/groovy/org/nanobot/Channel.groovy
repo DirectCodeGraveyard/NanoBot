@@ -1,11 +1,34 @@
 package org.nanobot
 
 class Channel {
+    /**
+     * Bot Associated with this Channel
+     */
     NanoBot bot
+
+    /**
+     * Channel Topic
+     */
     String topic
+
+    /**
+     * Channel Name
+     */
     String name
+
+    /**
+     * Channel Users
+     */
     List<String> users = []
+
+    /**
+     * Channel Operators
+     */
     List<String> ops = []
+
+    /**
+     * Channel Voices
+     */
     List<String> voices = []
 
     @Override
@@ -13,10 +36,18 @@ class Channel {
         return name
     }
 
+    /**
+     * Ban a User
+     * @param target user
+     */
     def ban(target) {
         bot.ban(name, target)
     }
 
+    /**
+     * Unban a User
+     * @param target user
+     */
     def unban(target) {
         bot.unban(name, target)
     }

@@ -133,7 +133,25 @@ class MainIRCBot {
                 try {
                     Utils.runScript(it.args.join(" ") as String, [
                             bot: bot,
-                            commands: commands
+                            commands: commands,
+                            channel: it.channel,
+                            user: user,
+                            admins: admins,
+                            println: { String text ->
+                                it.reply(text)
+                            },
+                            fetch: { String url ->
+                                return url.toURL().getText()
+                            },
+                            parseJSON: { String content ->
+                                return Utils.parseJSON(content)
+                            },
+                            parseXML: { String content ->
+                                return Utils.parseXML(content)
+                            },
+                            encodeJSON: { Object obj, boolean pretty = false ->
+                                return Utils.encodeJSON(obj, pretty)
+                            }
                     ])
                 } catch (e) {
                     bot.notice(it.user, "Exception Thrown: ${e.class.name}: ${e.message}")
