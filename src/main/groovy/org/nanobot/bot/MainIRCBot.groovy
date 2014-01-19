@@ -53,6 +53,8 @@ class MainIRCBot {
                 admins: []
         ])
 
+        def admins = botConfig["admins"] as List<String>
+
         bot.server = serverConfig["host"]
         bot.port = serverConfig["port"]
 
@@ -124,35 +126,37 @@ class MainIRCBot {
             it.reply("> Hello!")
         }
 
+        def binding = [
+                bot: bot,
+                commands: commands,
+                fetch: { String url ->
+                    return url.toURL().getText()
+                },
+                parseJSON: { String content ->
+                    return Utils.parseJSON(content)
+                },
+                parseXML: { String content ->
+                    return Utils.parseXML(content)
+                },
+                encodeJSON: { Object obj, boolean pretty = false ->
+                    return Utils.encodeJSON(obj, pretty)
+                },
+                file: { File parent = null, String path ->
+                    return new File(parent, path)
+                },
+                admins: admins
+        ] as Binding
+
         commands["r"] = {
             def user = it.user as String
-            def admins = botConfig["admins"] as List<String>
             if (!admins.contains(user))
                 it.reply("> Sorry, only admins may use this command.")
             else {
                 try {
-                    Utils.runScript(it.args.join(" ") as String, [
-                            bot: bot,
-                            commands: commands,
-                            channel: it.channel,
-                            user: user,
-                            admins: admins,
-                            println: { String text ->
-                                it.reply(text)
-                            },
-                            fetch: { String url ->
-                                return url.toURL().getText()
-                            },
-                            parseJSON: { String content ->
-                                return Utils.parseJSON(content)
-                            },
-                            parseXML: { String content ->
-                                return Utils.parseXML(content)
-                            },
-                            encodeJSON: { Object obj, boolean pretty = false ->
-                                return Utils.encodeJSON(obj, pretty)
-                            }
-                    ])
+                    binding.setVariable("user", user)
+                    binding.setVariable("channel", it.channel)
+                    binding.setVariable("say", it.reply)
+                    Utils.runScript(it.args.join(" ") as String, binding)
                 } catch (e) {
                     bot.notice(it.user, "Exception Thrown: ${e.class.name}: ${e.message}")
                 }
@@ -165,7 +169,8 @@ class MainIRCBot {
             if (it.name.endsWith(".groovy")) {
                 Utils.runScript(it.text, [
                         bot: bot,
-                        commands: commands
+                        commands: commands,
+                        admins: admins
                 ])
             }
         }

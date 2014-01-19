@@ -64,7 +64,9 @@ class Utils {
     }
 
     static def runScript(String text, binding) {
-        def shell = new GroovyShell(binding as Binding)
+        if (binding instanceof Map)
+            binding = binding as Binding
+        def shell = new GroovyShell(binding)
 
         return shell.parse(text).run()
     }
