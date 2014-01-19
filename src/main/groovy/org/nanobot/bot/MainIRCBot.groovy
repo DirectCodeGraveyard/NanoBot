@@ -8,7 +8,7 @@ import org.nanobot.config.GConfig
 class MainIRCBot {
     static NanoBot bot
     static Map<String, Closure> commands = [:]
-    static config = new GConfig(new File("bot.cfg"))
+    static config = new GConfig(new File("config.groovy"))
     static scriptDir = new File("scripts")
     static List<String> admins
 
@@ -56,13 +56,13 @@ class MainIRCBot {
 
         admins = botConfig["admins"] as List<String>
 
-        bot.server = serverConfig["host"]
-        bot.port = serverConfig["port"]
+        bot.server = serverConfig["host"] ?: "irc.esper.net"
+        bot.port = serverConfig["port"] ?: 6667
 
-        bot.nickname = botConfig["nickname"]
-        bot.userName = botConfig["username"]
-        bot.realName = botConfig["realname"]
-        bot.commandPrefix = botConfig["commandPrefix"]
+        bot.nickname = botConfig["nickname"] ?: "SuperNanoBot"
+        bot.userName = botConfig["username"] ?: "SuperNanoBot"
+        bot.realName = botConfig["realname"] ?: "NanoBot"
+        bot.commandPrefix = botConfig["commandPrefix"] ?: "!"
 
         loadScripts()
 

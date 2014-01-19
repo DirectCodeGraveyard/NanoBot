@@ -74,10 +74,17 @@ class NanoBot {
                 handler.call(data)
             }
         }
-        if (useThread)
-            Thread.startDaemon("BotEvent[${name}]", execute)
-        else
+        if (useThread) {
+            def thread = Thread.startDaemon("BotEvent[${name}]", execute)
+            thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                @Override
+                void uncaughtException(Thread t, Throwable e) {
+                    e.printStackTrace()
+                }
+            })
+        } else {
             execute()
+        }
     }
 
     /**
