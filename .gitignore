@@ -12,6 +12,6 @@
 /builds.json
 /build-number.txt
 /scripts/
-/bot.cfg
+/config.groovy
 atlassian-ide-plugin.xml
 /work/
