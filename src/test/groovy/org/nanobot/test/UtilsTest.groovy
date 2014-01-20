@@ -7,7 +7,7 @@ import static groovy.util.GroovyTestCase.assertEquals
 
 class UtilsTest {
     @Test
-    void testEncodeJSON() {
+    void encodeJSON() {
         def expected = "{\n" +
                 "    \"string\": \"String\",\n" +
                 "    \"array\": [\n" +
@@ -38,7 +38,7 @@ class UtilsTest {
     }
 
     @Test
-    void testParseJSON() {
+    void parseJSON() {
         def expected = [
                 string: "String",
                 array: [
@@ -71,7 +71,7 @@ class UtilsTest {
     }
 
     @Test
-    void testParseXML() {
+    void parseXML() {
         def expected = 'root[attributes={}; value=[test[attributes={}; value=[Works]]]]'
         def actual = Utils.parseXML("<root><test>Works</test></root>")
         assertEquals(expected, actual.toString())
