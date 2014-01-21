@@ -76,4 +76,13 @@ class UtilsTest {
         def actual = Utils.parseXML("<root><test>Works</test></root>")
         assertEquals(expected, actual.toString())
     }
+
+    @Test
+    void runScript() {
+        def binding = [
+                test: "Hi"
+        ] as Binding
+        Utils.runScript("test = 'Works'", binding)
+        assertEquals("Works", binding.getVariable("test"))
+    }
 }

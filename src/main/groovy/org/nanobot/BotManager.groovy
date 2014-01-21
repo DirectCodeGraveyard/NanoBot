@@ -57,8 +57,9 @@ class BotManager {
     }
 
     def slayAll() {
-        bots.each {
-            it.socket.close()
+        bots.each { bot ->
+            def socket = bot.metaClass.getMetaMethod("getSocket").invoke(bot) as Socket
+            socket.close()
         }
         bots = []
     }
