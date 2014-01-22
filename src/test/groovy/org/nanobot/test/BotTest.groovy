@@ -3,10 +3,10 @@ package org.nanobot.test
 import org.junit.Test
 import org.nanobot.NanoBot
 
+import static org.junit.Assert.fail
+
 class BotTest {
     private bot = new NanoBot("irc.esper.net", 6667, "JUnitTestBot")
-    private failed = false
-    private exception = null
 
     void setup() {
         bot.on('nick-in-use') {
@@ -30,10 +30,9 @@ class BotTest {
                 join("#KenBot")
                 sleep(4000)
                 disconnect("Test Complete")
-            } catch(e) {
-                bot.disconnect("Tests Failed")
-                failed = true
-                exception = e
+            } catch(ignored) {
+                disconnect("Tests Failed")
+                fail("Bot Tests Failed")
             }
         }
 
@@ -47,7 +46,5 @@ class BotTest {
         setup()
         bot.connect()
         while(!bot.states.has("quit"));
-        if (failed)
-            throw exception
     }
 }

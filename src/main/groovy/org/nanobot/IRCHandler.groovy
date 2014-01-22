@@ -2,6 +2,7 @@ package org.nanobot
 
 import groovy.transform.CompileStatic
 
+@SuppressWarnings("GroovyIfStatementWithTooManyBranches")
 class IRCHandler implements Runnable {
     def BufferedReader reader
     def PrintStream writer
@@ -67,7 +68,7 @@ class IRCHandler implements Runnable {
                 def user = NanoBot.parseNickname(split[0])
                 def channel = split[2]
                 def topic = split.drop(3).join(' ').substring(1)
-                bot.channels.get(channel).topic = topic
+                bot.channels[channel].topic = topic
                 bot.dispatch(name: 'topic', channel: bot.channels[channel], topic: topic, user: user)
             } else if (split[1] == 'INVITE') { // Invited to Channel
                 def user = NanoBot.parseNickname(split[0])

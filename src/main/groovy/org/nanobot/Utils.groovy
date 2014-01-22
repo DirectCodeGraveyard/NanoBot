@@ -8,7 +8,6 @@ import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 class Utils {
     private static JSON = new JsonSlurper()
     private static XML = new XmlParser()
-    private static shell = new GroovyShell()
 
     static def parseJSON(String input) {
         return JSON.parseText(input)

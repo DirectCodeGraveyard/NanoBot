@@ -33,7 +33,7 @@ class NanoBot {
 
     NanoBot(BotConfig botConfig) {
         this()
-        server = botConfig.getServer().get('host') as String
+        server = botConfig.getServer()['host'] as String
         port = botConfig.getServer().get('port', 6667) as int
         nickname = botConfig.getBot().get('nickname', 'NanoBot')
         def channels = botConfig.getBot().get('channels', [])

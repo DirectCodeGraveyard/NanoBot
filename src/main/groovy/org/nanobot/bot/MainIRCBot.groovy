@@ -81,7 +81,7 @@ class MainIRCBot {
             def origNick = it.original
             def newNick = "${origNick}_"
             println "The nickname ${origNick} is in use. Using ${newNick}."
-            bot.changeNick(newNick)
+            changeNick(newNick)
         }
 
         bot.on('bot-join') {
@@ -117,9 +117,11 @@ class MainIRCBot {
 
             if (commands.containsKey(command)) {
                 event.reply = {
-                    bot.msg(event.channel, it)
+                    msg(event.channel, it)
                 }
-                commands[command](event)
+                def handler = commands[command]
+                handler.delegate = bot
+                handler(event)
             }
         }
 
@@ -131,19 +133,19 @@ class MainIRCBot {
                 bot: bot,
                 commands: commands,
                 fetch: { String url ->
-                    return url.toURL().getText()
+                    url.toURL().getText()
                 },
                 parseJSON: { String content ->
-                    return Utils.parseJSON(content)
+                    Utils.parseJSON(content)
                 },
                 parseXML: { String content ->
-                    return Utils.parseXML(content)
+                    Utils.parseXML(content)
                 },
                 encodeJSON: { Object obj, boolean pretty = false ->
-                    return Utils.encodeJSON(obj, pretty)
+                    Utils.encodeJSON(obj, pretty)
                 },
                 file: { File parent = null, String path ->
-                    return new File(parent, path)
+                    new File(parent, path)
                 },
                 admins: admins
         ] as Binding
