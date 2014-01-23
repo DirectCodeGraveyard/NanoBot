@@ -6,4 +6,4 @@ env:
   - secure: N9yuC41dZ4rJp9iVmDEvti4fHAKqWZ8xuYB0Ozz62P117MrOnAy2HA65uGVqPQfWveqQtiKvftoRKZ2OiaXAI0cH2c80PSBow0u3ELw+NhFBj1fVwtBCjpzb0etqJp1PzZ5aizFOkJRV9A8c6aGCQSJnlmS2gBmKDrMeDBYjfNA=
   - secure: S0qOCJSvuDywx09b2b60G3qHQK+f0osBpeHCZTVelH5/+Acpy3SwPSo91iAjinpDBkSl+jLwMhIHZhTYJp9q/I6/7/zeU/phOp4pIhjFBpgZM3QEMfab1fDGuCT7MOgFoBO6PbLY6BTW/0iLp/5Odr/SM1isJlXkwuyacPEjhzU=
 after_sucess:
-  - TERM=dumb ./gradlew uploadArchives -PsonatypeUsername="${SONATYPE_USERNAME}" -PsonatypePassword="${SONATYPE_PASSWORD}"
+- TERM=dumb ./gradlew uploadArchives -PsonatypeUsername="${SONATYPE_USERNAME}" -PsonatypePassword="${SONATYPE_PASSWORD}"
