@@ -295,7 +295,6 @@ class NanoBot {
      * @param hostmask Hostmask to parse
      * @return nickname
      */
-    @Memoized(maxCacheSize = 20)
     public
     static def parseNickname(String hostmask) {
         return parseHostmask(hostmask)["nickname"]
