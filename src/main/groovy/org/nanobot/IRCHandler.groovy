@@ -8,6 +8,7 @@ class IRCHandler implements Runnable {
     def PrintStream writer
     def NanoBot bot
     def Thread thread
+    Thread timeoutThread
 
     IRCHandler(NanoBot bot, BufferedReader reader, PrintStream writer) {
         this.bot = bot
@@ -16,6 +17,13 @@ class IRCHandler implements Runnable {
         this.thread = Thread.start("NanoBot-InputHandler", {
             this.run()
         })
+        this.timeoutThread = Thread.startDaemon { ->
+            while (bot.socket.isConnected()) {
+                if (bot.lastPingTime != -1 && (System.currentTimeMillis() - bot.lastPingTime) >= 120000)
+                    bot.dispatch(name: "timeout", lastPing: bot.lastPingTime)
+                sleep(2000)
+            }
+        }
         bot.states.on("connect")
         bot.dispatch(name: 'connect')
         send("NICK ${bot.nickname}")
@@ -33,6 +41,7 @@ class IRCHandler implements Runnable {
             if (bot.debug)
                 println line
             if (split[0] == 'PING') {
+                bot.lastPingTime = System.currentTimeMillis()
                 bot.dispatch(name: 'ping', id: split[1].substring(1))
                 writer.println "PONG ${split[1]}"
                 if (!bot.states.has("ready")) {

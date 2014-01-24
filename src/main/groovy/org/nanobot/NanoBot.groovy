@@ -12,7 +12,8 @@ class NanoBot {
     def port
     def nickname
     final HashMap<String, Channel> channels = [:]
-    private Socket socket
+    protected long lastPingTime = -1
+    protected Socket socket
     def realName = 'NanoBot'
     def commandPrefix = '!'
     private IRCHandler ircHandler
