@@ -52,7 +52,7 @@ class IRCHandler implements Runnable {
                 def sender = NanoBot.parseNickname(split[0])
                 def msg = split.drop(3).join(' ').substring(1)
                 if (msg.startsWith('\u0001')) {
-                    def type = msg.substring(1, msg.indexOf(" "))
+                    def type = msg.substring(1, msg.contains(" ") ? msg.indexOf(" ") : msg.size() - 1)
                     msg = msg.substring(type.size() + 2).replaceAll('\u0001', '')
                     bot.dispatch(name: "ctcp", user: sender, channel: bot.channels[split[2]], type: type, message: msg)
                 } else {
@@ -63,7 +63,7 @@ class IRCHandler implements Runnable {
                 def msg = split.drop(3).join(' ').substring(1)
                 if (msg.startsWith('\u0001')) {
                     msg = msg.substring(1)
-                    def type = msg.substring(0, msg.indexOf(" "))
+                    def type = msg.substring(1, msg.indexOf(" ") ?: msg.size() - 1)
                     bot.dispatch(name: "priv-ctcp", user: user, type: type, message: msg.substring(type.size()))
                 }
                 bot.dispatch(name: 'pm', user: user, message: Colors.removeFormattingAndColors(msg), rawMessage: msg)
