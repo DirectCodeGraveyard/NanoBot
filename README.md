@@ -10,6 +10,7 @@ Use the [Gradle Wrapper](http://www.gradle.org/docs/current/userguide/gradle_wra
 ## Using
 
 Examples:
+- [Built-in Bot](https://github.com/DirectMyFile/NanoBot/blob/master/src/main/groovy/org/nanobot/bot/MainIRCBot.groovy)
 - [ForgeEssentials Bot](https://github.com/ForgeEssentials/cloaked-octo-robot)
 - [NanoBot Test](https://github.com/DirectMyFile/NanoBot/blob/master/src/main/groovy/TestNanoBot.groovy)
 
