@@ -1,6 +1,9 @@
 package org.nanobot.bot
 
 import groovy.io.FileType
+import org.codehaus.groovy.control.CompilerConfiguration
+import org.nanobot.BotDSL
+import org.nanobot.BotDSLScript
 import org.nanobot.NanoBot
 import org.nanobot.Utils
 import org.nanobot.config.GConfig
@@ -147,7 +150,14 @@ class MainIRCBot {
                 file: { File parent = null, String path ->
                     new File(parent, path)
                 },
-                admins: admins
+                admins: admins,
+                dsl: new BotDSL(bot) {
+
+                    @Override
+                    Object run() {
+                        return null
+                    }
+                }
         ] as Binding
 
         commands["r"] = {
@@ -163,6 +173,20 @@ class MainIRCBot {
                 } catch (e) {
                     bot.notice(it.user, "Exception Thrown: ${e.class.name}: ${e.message}")
                 }
+            }
+        }
+
+        commands["dsl"] = {
+            def user = it.user as String
+            if (!admins.contains(user))
+                it.reply("> Sorry, only admins may use this command.")
+            else {
+                def config = new CompilerConfiguration()
+                config.scriptBaseClass = BotDSLScript.class.name
+                def shell = new GroovyShell(config)
+                shell.setVariable("dsl", new BotDSL(bot ))
+                def script = shell.parse(it.args.join(" ") as String) as BotDSLScript
+                script.run()
             }
         }
     }
